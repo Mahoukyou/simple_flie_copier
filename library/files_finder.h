@@ -34,6 +34,7 @@ namespace fc
 			return found_files_;
 		}
 
+		void update_files_in_path();
 
 	private:
 		std::vector<std::filesystem::path> search_for_files() const;
