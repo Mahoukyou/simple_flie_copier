@@ -4,7 +4,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(
 	file_copier_srcs
-	temp.cpp
+	copier_settings.h
+	files_finder.h
+	files_finder.cpp
 )
 add_library(file_copier_lib STATIC ${file_copier_srcs})
 set_target_properties(file_copier_lib PROPERTIES LINKER_LANGUAGE CXX)
