@@ -59,6 +59,23 @@ namespace fc
 			if (is_regular_file(directory_entry.path(), error_code) &&
 				std::find(extensions.begin(), extensions.end(), directory_entry.path().extension()) != extensions.end())
 			{
+				const auto file_size = directory_entry.file_size(error_code);
+				if(error_code)
+				{
+					// todo, do something with the file, since it matches the extension, but file_size could not be read
+					continue;
+				}
+
+				if(settings().min_size && settings().min_size.value() > file_size)
+				{
+					continue;
+				}
+
+				if (settings().max_size && settings().max_size.value() < file_size)
+				{
+					continue;
+				}
+
 				found_files.emplace_back(directory_entry.path());
 			}
 		}

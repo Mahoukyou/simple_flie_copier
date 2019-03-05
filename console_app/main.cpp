@@ -3,7 +3,7 @@
 
 int main()
 {
-	fc::finder_settings settings;
+	fc::finder_settings settings{ 100, 500, {} };
 	settings.extensions_to_copy.emplace_back(L".cpp");
 	settings.extensions_to_copy.emplace_back(L".h");
 
@@ -12,6 +12,6 @@ int main()
 
 	for (const auto& p : ff.found_files())
 	{
-		std::wcout << p << '\n';
+		std::wcout << p.filename() << "\t\tSize: " << std::filesystem::file_size(p) << '\n';
 	}
 }
