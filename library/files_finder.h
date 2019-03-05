@@ -1,12 +1,19 @@
 #pragma once
 
 #include <filesystem>
-
-#include "copier_settings.h"
-
+#include <optional>
+#include <vector>
 
 namespace fc
 {
+	struct finder_settings
+	{
+		std::optional<size_t> min_size{ std::nullopt };
+		std::optional<size_t> max_size{ std::nullopt };
+
+		std::vector<std::wstring> extensions_to_copy;
+	};
+
 	class files_finder
 	{
 	public:
@@ -17,7 +24,7 @@ namespace fc
 			ok
 		};
 
-		files_finder(copier_settings settings, std::filesystem::path path);
+		files_finder(finder_settings settings, std::filesystem::path path);
 		~files_finder() = default;
 
 		files_finder(const files_finder&) = delete;
@@ -26,7 +33,7 @@ namespace fc
 		files_finder& operator=(const files_finder&) = delete;
 		files_finder& operator=(files_finder&&) noexcept = delete;
 
-		const copier_settings& settings() const noexcept
+		const finder_settings& settings() const noexcept
 		{
 			return settings_;
 		}
@@ -48,7 +55,7 @@ namespace fc
 	private:
 		std::vector<std::filesystem::path> search_for_files() const;
 
-		copier_settings settings_;
+		finder_settings settings_;
 		std::filesystem::path path_;
 
 		std::vector<std::filesystem::path> found_files_;

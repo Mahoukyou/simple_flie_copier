@@ -4,7 +4,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(
 	file_copier_srcs
-	copier_settings.h
 	files_finder.h
 	files_finder.cpp
 )

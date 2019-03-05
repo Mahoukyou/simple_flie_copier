@@ -1,10 +1,11 @@
-#include "files_finder.h"
 #include <iostream>
+#include "files_finder.h"
 
 int main()
 {
-	fc::copier_settings settings;
-	settings.extensions_to_copy.emplace_back(L".txt");
+	fc::finder_settings settings;
+	settings.extensions_to_copy.emplace_back(L".cpp");
+	settings.extensions_to_copy.emplace_back(L".h");
 
 	fc::files_finder ff{ settings, R"(A:\)" };
 	ff.update_files_in_path();

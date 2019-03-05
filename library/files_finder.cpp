@@ -2,7 +2,7 @@
 
 namespace fc
 {
-	files_finder::files_finder(copier_settings settings, std::filesystem::path path) :
+	files_finder::files_finder(finder_settings settings, std::filesystem::path path) :
 		settings_{ std::move(settings) },
 		path_{ std::move(path) }
 	{
