@@ -6,12 +6,26 @@
 
 namespace fc
 {
-	struct finder_settings
+	struct extension_settings
 	{
 		std::optional<size_t> min_size{ std::nullopt };
 		std::optional<size_t> max_size{ std::nullopt };
 
-		std::vector<std::wstring> extensions_to_copy;
+		std::wstring extension;
+	};
+
+	inline bool operator==(const extension_settings& settings, const std::filesystem::path& extension)
+	{
+		return settings.extension == extension;
+	}
+
+	struct finder_settings
+	{
+		std::optional<size_t> global_min_size{ std::nullopt };
+		std::optional<size_t> global_max_size{ std::nullopt };
+
+		// Overrides global size settings per extension if not nullopt
+		std::vector<extension_settings> extensions_to_copy;
 	};
 
 	class files_finder

@@ -56,22 +56,30 @@ namespace fc
 		const auto& extensions = settings().extensions_to_copy;
 		for (auto& directory_entry : recursive_directory_iterator(path(), directory_options::skip_permission_denied, error_code))
 		{
-			if (is_regular_file(directory_entry.path(), error_code) &&
-				std::find(extensions.begin(), extensions.end(), directory_entry.path().extension()) != extensions.end())
+			if (!is_regular_file(directory_entry.path(), error_code))
+			{
+				continue;
+			}
+
+			if (const auto found_it = std::find(extensions.begin(), extensions.end(), directory_entry.path().extension());
+				found_it != extensions.end())
 			{
 				const auto file_size = directory_entry.file_size(error_code);
-				if(error_code)
+				if (error_code)
 				{
 					// todo, do something with the file, since it matches the extension, but file_size could not be read
 					continue;
 				}
 
-				if(settings().min_size && settings().min_size.value() > file_size)
+				const auto& min_size_settings = found_it->min_size ? found_it->min_size : settings().global_min_size;
+				const auto& max_size_settings = found_it->max_size ? found_it->max_size : settings().global_max_size;
+
+				if (min_size_settings && min_size_settings.value() > file_size)
 				{
 					continue;
 				}
 
-				if (settings().max_size && settings().max_size.value() < file_size)
+				if (max_size_settings && max_size_settings.value() < file_size)
 				{
 					continue;
 				}
