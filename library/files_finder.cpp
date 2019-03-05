@@ -47,16 +47,16 @@ namespace fc
 			return { path() };
 		}
 
-		if (error_code)
+		if (error_code || settings().extensions_to_find.empty())
 		{
 			return {};
 		}
 
 		std::vector<std::filesystem::path> found_files;
-		const auto& extensions = settings().extensions_to_copy;
+		const auto& extensions = settings().extensions_to_find;
 		for (auto& directory_entry : recursive_directory_iterator(path(), directory_options::skip_permission_denied, error_code))
 		{
-			if (!is_regular_file(directory_entry.path(), error_code))
+			if (!directory_entry.is_regular_file(error_code))
 			{
 				continue;
 			}

@@ -25,7 +25,7 @@ namespace fc
 		std::optional<size_t> global_max_size{ std::nullopt };
 
 		// Overrides global size settings per extension if not nullopt
-		std::vector<extension_settings> extensions_to_copy;
+		std::vector<extension_settings> extensions_to_find;
 	};
 
 	class files_finder
