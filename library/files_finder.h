@@ -10,6 +10,13 @@ namespace fc
 	class files_finder
 	{
 	public:
+		enum class e_path_status
+		{
+			not_found,
+			not_file_or_directory,
+			ok
+		};
+
 		files_finder(copier_settings settings, std::filesystem::path path);
 		~files_finder() = default;
 
@@ -34,11 +41,13 @@ namespace fc
 			return found_files_;
 		}
 
-		void update_files_in_path();
+		e_path_status path_status() const;
+
+		bool update_files_in_path();
 
 	private:
 		std::vector<std::filesystem::path> search_for_files() const;
-		
+
 		copier_settings settings_;
 		std::filesystem::path path_;
 

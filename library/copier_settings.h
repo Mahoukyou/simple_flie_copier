@@ -11,7 +11,6 @@ namespace fc
 		std::optional<size_t> min_size{ std::nullopt };
 		std::optional<size_t> max_size{ std::nullopt };
 
-		bool keep_directories{ false };
 		std::vector<std::wstring> extensions_to_copy;
 	};
 }

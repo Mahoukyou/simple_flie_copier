@@ -9,7 +9,7 @@ int main()
 	fc::files_finder ff{ settings, R"(A:\)" };
 	ff.update_files_in_path();
 
-	for(const auto& p : ff.found_files())
+	for (const auto& p : ff.found_files())
 	{
 		std::wcout << p << '\n';
 	}
