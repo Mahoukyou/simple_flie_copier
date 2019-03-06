@@ -6,6 +6,8 @@ set(
 	file_copier_srcs
 	files_finder.h
 	files_finder.cpp
+	files_copier.h
+	files_copier.cpp
 )
 add_library(file_copier_lib STATIC ${file_copier_srcs})
 set_target_properties(file_copier_lib PROPERTIES LINKER_LANGUAGE CXX)
