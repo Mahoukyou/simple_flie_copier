@@ -13,7 +13,8 @@ namespace fc
 		overwrite_existing = static_cast<int>(std::filesystem::copy_options::overwrite_existing),
 		
 		// Updates an existing file in destination if last modification of source file is newer
-		update_existing = static_cast<int>(std::filesystem::copy_options::update_existing)
+		update_existing = static_cast<int>(std::filesystem::copy_options::update_existing),
+		keep_both
 	};
 
 	struct copier_settings
@@ -54,6 +55,8 @@ namespace fc
 			const file_copy_end_callback& end_callback) const;
 
 	private:
+		static std::filesystem::path get_next_free_filename(const std::filesystem::path& current_filename);
+
 		copier_settings settings_;
 		files_finder files_finder_;
 	};
