@@ -7,9 +7,9 @@ void file_copy_begin_callback(const fc::files_copier& fc, const size_t file_inde
 	std::wcout << "Begin copy of: " << fc.finder().found_files()[file_index] << '\n';
 }
 
-void file_copy_end_callback(const fc::files_copier& fc, const bool result, const size_t file_index)
+void file_copy_end_callback(const fc::files_copier& fc, const std::error_code& error_code, const size_t file_index)
 {
-	if(result)
+	if(!error_code)
 	{
 		std::wcout << fc.finder().found_files()[file_index] << " was copied successfully\n";
 	}

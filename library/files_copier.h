@@ -27,7 +27,7 @@ namespace fc
 	public:
 		/* */
 		using file_copy_begin_callback = std::function<void(const files_copier&, size_t)>;
-		using file_copy_end_callback = std::function<void(const files_copier&, bool, size_t)>;
+		using file_copy_end_callback = std::function<void(const files_copier&, const std::error_code&, size_t)>;
 
 		files_copier(copier_settings copier_settings, finder_settings finder_settings, std::filesystem::path finder_path);
 		~files_copier() = default;
@@ -49,7 +49,7 @@ namespace fc
 		}
 
 		bool find_files_to_copy();
-		void copy_found_files(
+		bool copy_found_files(
 			const file_copy_begin_callback& begin_callback,
 			const file_copy_end_callback& end_callback) const;
 

@@ -14,13 +14,13 @@ namespace fc
 		return files_finder_.update_files_in_path();
 	}
 
-	void files_copier::copy_found_files(
+	bool files_copier::copy_found_files(
 		const file_copy_begin_callback& begin_callback,
 		const file_copy_end_callback& end_callback) const
 	{
 		if (finder().found_files().empty())
 		{
-			return;
+			return true;
 		}
 
 		std::error_code error_code{};
@@ -30,7 +30,7 @@ namespace fc
 
 			if (error_code)
 			{
-				return;
+				return false;
 			}
 		}
 
@@ -46,8 +46,10 @@ namespace fc
 
 			if (end_callback)
 			{
-				end_callback(*this, error_code.value() == 0, i);
+				end_callback(*this, error_code, i);
 			}
 		}
+
+		return true;
 	}
 }
