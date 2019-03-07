@@ -2,6 +2,30 @@
 
 namespace fc
 {
+	extension_settings::extension_settings(std::optional<size_t> min_size, std::optional<size_t> max_size, std::wstring extension) :
+		min_size_{ min_size },
+		max_size_{ max_size },
+		extension_{ std::move(extension) }
+	{
+		if (min_size_ && max_size_ &&
+			min_size_.value() >= max_size_.value())
+		{
+			throw std::invalid_argument{ "Min size cannot be equal or greater than max size" };
+		}
+
+		// todo, other checks for extension? (/, |, \, <, > etc)?
+		if (extension_.empty() || (extension_.size() == 1 && extension_ == L"."))
+		{
+			throw std::invalid_argument{ "Extension cannot be empty" };
+		}
+
+		if (wcsncmp(extension_.data(), L".", 1) != 0)
+		{
+			auto new_extension = L"." + extension_;
+			extension_ = std::move(new_extension);
+		}
+	}
+
 	files_finder::files_finder(finder_settings settings, std::filesystem::path path) :
 		settings_{ std::move(settings) },
 		path_{ std::move(path) }
@@ -71,8 +95,8 @@ namespace fc
 					continue;
 				}
 
-				const auto& min_size_settings = found_it->min_size ? found_it->min_size : settings().global_min_size;
-				const auto& max_size_settings = found_it->max_size ? found_it->max_size : settings().global_max_size;
+				const auto& min_size_settings = found_it->min_size() ? found_it->min_size() : settings().global_min_size;
+				const auto& max_size_settings = found_it->max_size() ? found_it->max_size() : settings().global_max_size;
 
 				if (min_size_settings && min_size_settings.value() > file_size)
 				{

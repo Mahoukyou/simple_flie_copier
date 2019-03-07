@@ -21,14 +21,14 @@ void file_copy_end_callback(const fc::files_copier& fc, const std::error_code& e
 
 int main()
 {
-	fc::finder_settings finder_settings { 5000, std::nullopt, {} };
-	finder_settings.extensions_to_find.push_back({ std::nullopt, std::nullopt, {L".cpp"} });
-	finder_settings.extensions_to_find.push_back({ std::nullopt, std::nullopt, {L".h"} });
-	finder_settings.extensions_to_find.push_back({ std::nullopt, std::nullopt, {L".txt"} });
+	fc::finder_settings finder_settings{};
+	finder_settings.extensions_to_find.emplace_back(std::nullopt, std::nullopt, L".cpp");
+	finder_settings.extensions_to_find.emplace_back(std::nullopt, std::nullopt, L".h");
+	finder_settings.extensions_to_find.emplace_back(std::nullopt, std::nullopt, L".txt");
 
 
-	fc::copier_settings copier_settings{ L"C:\\Destination\\", fc::e_copy_options::skip_existing };
-	fc::files_copier fc{ copier_settings, finder_settings, L"A:\\" };
+	fc::copier_settings copier_settings{ L"C:\\Destination\\", fc::e_copy_options::keep_both };
+	fc::files_copier fc{ copier_settings, finder_settings, L"A:\\tester" };
 
 	fc.find_files_to_copy();
 	for(auto const& file : fc.finder().found_files())

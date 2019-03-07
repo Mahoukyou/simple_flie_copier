@@ -8,15 +8,33 @@ namespace fc
 {
 	struct extension_settings
 	{
-		std::optional<size_t> min_size{ std::nullopt };
-		std::optional<size_t> max_size{ std::nullopt };
+		extension_settings(std::optional<size_t> min_size, std::optional<size_t> max_size, std::wstring extension);
 
-		std::wstring extension;
+		const std::optional<size_t>& min_size() const noexcept
+		{
+			return min_size_;
+		}
+
+		const std::optional<size_t>& max_size() const noexcept
+		{
+			return max_size_;
+		}
+
+		const std::wstring& extension() const noexcept
+		{
+			return extension_;
+		}
+
+	private:
+		std::optional<size_t> min_size_;
+		std::optional<size_t> max_size_;
+
+		std::wstring extension_;
 	};
 
 	inline bool operator==(const extension_settings& settings, const std::filesystem::path& extension)
 	{
-		return settings.extension == extension;
+		return settings.extension() == extension;
 	}
 
 	struct finder_settings
