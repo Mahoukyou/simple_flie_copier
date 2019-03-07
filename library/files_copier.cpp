@@ -45,7 +45,7 @@ namespace fc
 			if(settings().copy_option == e_copy_options::keep_both)
 			{
 				auto new_filepath = get_new_filepath(finder().found_files()[i].filename());
-				if (!std::filesystem::exists(new_filepath, error_code))
+				if (!exists(new_filepath, error_code))
 				{
 					new_filepath = get_next_free_filepath(new_filepath);
 				}
@@ -81,21 +81,30 @@ namespace fc
 
 	std::filesystem::path files_copier::get_next_free_filepath(const std::filesystem::path& current_filepath)
 	{
+		const auto concatenate_new_filepath = [](const std::wstring& base_filepath, const size_t index, const std::wstring& extension) -> std::wstring
+		{
+			std::wstring new_filepath{};
+			new_filepath.reserve(base_filepath.size() + 32);
+
+			new_filepath += base_filepath;
+			new_filepath += L" (";
+			new_filepath += std::to_wstring(index);
+			new_filepath += L")";
+			new_filepath += extension;
+
+			return new_filepath;
+		};
+
 		std::error_code error_code{};
 
-		// hacky and not efficient, redo entire method later, poc for now
+		// good enough, the main bottleneck is querying the drive anyway
 		const std::wstring extension = current_filepath.extension();
 		std::wstring base_filepath = current_filepath;
 		base_filepath.erase(base_filepath.size() - extension.size() - 1, extension.size());
 
 		for(size_t i = 1; i != 0; ++i)
 		{
-			auto new_filepath = base_filepath;
-			new_filepath += L" (";
-			new_filepath += std::to_wstring(i);
-			new_filepath += L")";
-			new_filepath += extension;
-
+			const auto new_filepath = concatenate_new_filepath(base_filepath, i, extension);
 			if (!std::filesystem::exists(new_filepath, error_code))
 			{
 				return new_filepath;
