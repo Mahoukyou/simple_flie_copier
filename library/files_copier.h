@@ -55,7 +55,8 @@ namespace fc
 			const file_copy_end_callback& end_callback) const;
 
 	private:
-		static std::filesystem::path get_next_free_filename(const std::filesystem::path& current_filename);
+		std::filesystem::path get_new_filepath(const std::wstring& filename) const;
+		static std::filesystem::path get_next_free_filepath(const std::filesystem::path& current_filepath);
 
 		copier_settings settings_;
 		files_finder files_finder_;

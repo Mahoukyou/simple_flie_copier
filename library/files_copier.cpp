@@ -44,21 +44,13 @@ namespace fc
 
 			if(settings().copy_option == e_copy_options::keep_both)
 			{
-				// todo, for now, make sure its valid in the settings
-				auto dest_wstring = settings().destination.wstring();
-				if (wcsncmp(&dest_wstring[dest_wstring.size() - 1], L"\\", 1) != 0)
+				auto new_filepath = get_new_filepath(finder().found_files()[i].filename());
+				if (!std::filesystem::exists(new_filepath, error_code))
 				{
-					dest_wstring += L'\\';
+					new_filepath = get_next_free_filepath(new_filepath);
 				}
 
-				dest_wstring += finder().found_files()[i].filename();
-				
-				// todo, check if the file exists before calling the method
-				// so we won't have to do redundant copy of the current filename
-				const auto new_file_name = get_next_free_filename(dest_wstring);
-
-				std::filesystem::copy(finder().found_files()[i], new_file_name, error_code);
-
+				std::filesystem::copy(finder().found_files()[i], new_filepath, error_code);
 			}
 			else
 			{
@@ -75,29 +67,38 @@ namespace fc
 		return true;
 	}
 
-	std::filesystem::path files_copier::get_next_free_filename(const std::filesystem::path& current_filename)
+	std::filesystem::path files_copier::get_new_filepath(const std::wstring& filename) const
 	{
-		if(!exists(current_filename))
+		// todo, for now, make sure its valid in the settings
+		auto filepath = settings().destination.wstring();
+		if (wcsncmp(&filepath[filepath.size() - 1], L"\\", 1) != 0)
 		{
-			return current_filename;
+			filepath += L'\\';
 		}
 
+		return filepath + filename;
+	}
+
+	std::filesystem::path files_copier::get_next_free_filepath(const std::filesystem::path& current_filepath)
+	{
+		std::error_code error_code{};
+
 		// hacky and not efficient, redo entire method later, poc for now
-		const std::wstring extension = current_filename.extension();
-		std::wstring base_filename = current_filename;
-		base_filename.erase(base_filename.size() - extension.size() - 1, extension.size());
+		const std::wstring extension = current_filepath.extension();
+		std::wstring base_filepath = current_filepath;
+		base_filepath.erase(base_filepath.size() - extension.size() - 1, extension.size());
 
 		for(size_t i = 1; i != 0; ++i)
 		{
-			auto new_filename = base_filename;
-			new_filename += L" (";
-			new_filename += std::to_wstring(i);
-			new_filename += L")";
-			new_filename += extension;
+			auto new_filepath = base_filepath;
+			new_filepath += L" (";
+			new_filepath += std::to_wstring(i);
+			new_filepath += L")";
+			new_filepath += extension;
 
-			if (!std::filesystem::exists(new_filename))
+			if (!std::filesystem::exists(new_filepath, error_code))
 			{
-				return new_filename;
+				return new_filepath;
 			}
 		}
 
