@@ -26,6 +26,55 @@ namespace fc
 		}
 	}
 
+	finder_settings::finder_settings(
+		std::optional<size_t> global_min_size,
+		std::optional<size_t> global_max_size,
+		std::vector<extension_settings> extensions) :
+		global_min_size_{ global_min_size },
+		global_max_size_{ global_max_size },
+		extensions_{ std::move(extensions) }
+	{
+		if (global_min_size_ && global_max_size_ &&
+			global_min_size_.value() >= global_max_size_.value())
+		{
+			throw std::invalid_argument{ "Min size cannot be equal or greater than max size" };
+		}
+
+		// todo, extensions_ unique items!!
+	}
+
+	bool finder_settings::add_extension(const extension_settings& extension)
+	{
+		const auto find_extension_predicate = [&extension](const extension_settings& ext) -> bool
+		{
+			return ext.extension() == extension.extension();
+		};
+
+		if (std::find_if(extensions().begin(), extensions().end(), find_extension_predicate) == extensions().end())
+		{
+			return false;
+		}
+
+		extensions_.push_back(extension);
+		return true;
+	}
+
+	bool finder_settings::add_extension(extension_settings&& extension)
+	{
+		const auto find_extension_predicate = [&extension](const extension_settings& ext) -> bool
+		{
+			return ext.extension() == extension.extension();
+		};
+
+		if (std::find_if(extensions().begin(), extensions().end(), find_extension_predicate) != extensions().end())
+		{
+			return false;
+		}
+
+		extensions_.push_back(std::move(extension));
+		return true;
+	}
+
 	files_finder::files_finder(finder_settings settings, std::filesystem::path path) :
 		settings_{ std::move(settings) },
 		path_{ std::move(path) }
@@ -71,13 +120,13 @@ namespace fc
 			return { path() };
 		}
 
-		if (error_code || settings().extensions_to_find.empty())
+		if (error_code || settings().extensions().empty())
 		{
 			return {};
 		}
 
 		std::vector<std::filesystem::path> found_files;
-		const auto& extensions = settings().extensions_to_find;
+		const auto& extensions = settings().extensions();
 		for (auto& directory_entry : recursive_directory_iterator(path(), directory_options::skip_permission_denied, error_code))
 		{
 			if (!directory_entry.is_regular_file(error_code))
@@ -95,8 +144,10 @@ namespace fc
 					continue;
 				}
 
-				const auto& min_size_settings = found_it->min_size() ? found_it->min_size() : settings().global_min_size;
-				const auto& max_size_settings = found_it->max_size() ? found_it->max_size() : settings().global_max_size;
+				// todo, use global only when both locals are null<!> because otherwise, it might have some undesired effects
+				// eg. local min 500, global max 200 
+				const auto& min_size_settings = found_it->min_size() ? found_it->min_size() : settings().global_min_size();
+				const auto& max_size_settings = found_it->max_size() ? found_it->max_size() : settings().global_max_size();
 
 				if (min_size_settings && min_size_settings.value() > file_size)
 				{

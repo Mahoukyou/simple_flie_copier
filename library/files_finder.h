@@ -26,8 +26,8 @@ namespace fc
 		}
 
 	private:
-		std::optional<size_t> min_size_;
-		std::optional<size_t> max_size_;
+		const std::optional<size_t> min_size_;
+		const std::optional<size_t> max_size_;
 
 		std::wstring extension_;
 	};
@@ -39,11 +39,37 @@ namespace fc
 
 	struct finder_settings
 	{
-		std::optional<size_t> global_min_size{ std::nullopt };
-		std::optional<size_t> global_max_size{ std::nullopt };
+		explicit finder_settings(
+			std::optional<size_t> global_min_size = {},
+			std::optional<size_t> global_max_size = {},
+			std::vector<extension_settings> extensions = {});
+
+		bool add_extension(const extension_settings& extension);
+		bool add_extension(extension_settings&& extension);
+
+		// todo, emplace extension
+
+		const std::optional<size_t>& global_min_size() const noexcept
+		{
+			return global_min_size_;
+		}
+
+		const std::optional<size_t>& global_max_size() const noexcept
+		{
+			return global_max_size_;
+		}
+
+		const std::vector<extension_settings>& extensions() const noexcept
+		{
+			return extensions_;
+		}
+
+	private:
+		const std::optional<size_t> global_min_size_;
+		const std::optional<size_t> global_max_size_;
 
 		// Overrides global size settings per extension if not nullopt
-		std::vector<extension_settings> extensions_to_find;
+		std::vector<extension_settings> extensions_;
 	};
 
 	class files_finder

@@ -22,9 +22,12 @@ void file_copy_end_callback(const fc::files_copier& fc, const std::error_code& e
 int main()
 {
 	fc::finder_settings finder_settings{};
-	finder_settings.extensions_to_find.emplace_back(std::nullopt, std::nullopt, L".cpp");
-	finder_settings.extensions_to_find.emplace_back(std::nullopt, std::nullopt, L".h");
-	finder_settings.extensions_to_find.emplace_back(std::nullopt, std::nullopt, L".txt");
+	finder_settings.add_extension({ std::nullopt, std::nullopt, L"cpp" });
+	finder_settings.add_extension({ std::nullopt, std::nullopt, L".h" });
+	finder_settings.add_extension({ std::nullopt, std::nullopt, L".txt" });
+	finder_settings.add_extension({ std::nullopt, std::nullopt, L"txt" });
+	finder_settings.add_extension({ std::nullopt, std::nullopt, L".txt" });
+
 
 
 	fc::copier_settings copier_settings{ L"C:\\Destination\\", fc::e_copy_options::keep_both };
