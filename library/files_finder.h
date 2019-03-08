@@ -26,8 +26,8 @@ namespace fc
 		}
 
 	private:
-		const std::optional<size_t> min_size_;
-		const std::optional<size_t> max_size_;
+		std::optional<size_t> min_size_;
+		std::optional<size_t> max_size_;
 
 		std::wstring extension_;
 	};
@@ -39,6 +39,7 @@ namespace fc
 
 	struct finder_settings
 	{
+		// If @extensions has any duplicates, they will be removed
 		explicit finder_settings(
 			std::optional<size_t> global_min_size = {},
 			std::optional<size_t> global_max_size = {},
@@ -46,8 +47,6 @@ namespace fc
 
 		bool add_extension(const extension_settings& extension);
 		bool add_extension(extension_settings&& extension);
-
-		// todo, emplace extension
 
 		const std::optional<size_t>& global_min_size() const noexcept
 		{

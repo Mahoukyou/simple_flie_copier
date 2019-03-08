@@ -40,7 +40,22 @@ namespace fc
 			throw std::invalid_argument{ "Min size cannot be equal or greater than max size" };
 		}
 
-		// todo, extensions_ unique items!!
+		if (extensions_.size() > 1)
+		{
+			const auto extension_sort_predicate = [](const extension_settings& a, const extension_settings& b)
+			{
+				return a.extension() < b.extension();
+			};
+			
+			const auto same_extension_predicate = [](const extension_settings& a, const extension_settings& b)
+			{
+				return a.extension() == b.extension();
+			};
+
+			std::sort(extensions_.begin(), extensions_.end(), extension_sort_predicate);
+			const auto last_unique_it = std::unique(extensions_.begin(), extensions_.end(), same_extension_predicate);
+			extensions_.erase(last_unique_it, extensions_.end());
+		}
 	}
 
 	bool finder_settings::add_extension(const extension_settings& extension)

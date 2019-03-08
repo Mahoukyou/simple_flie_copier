@@ -121,7 +121,7 @@ namespace fc
 			}
 		}
 
-		// todo, if we didn't find new filename, use A-Z on top of 1-...size_t
-		return {};
+		// We shouldn't run out of 2^64-1 postfixes 
+		return current_filepath;
 	}
 }
