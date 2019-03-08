@@ -3,6 +3,23 @@
 
 namespace fc
 {
+	copier_settings::copier_settings(std::wstring destination_path, e_copy_options copy_option) :
+		copy_option_{ copy_option }
+	{
+		if(destination_path.empty())
+		{
+			throw std::invalid_argument{ "Destination path cannot be empty" };
+		}
+
+		if (wcsncmp(&destination_path[destination_path.size() - 1], L"\\", 1) != 0 &&
+			wcsncmp(&destination_path[destination_path.size() - 1], L"/", 1) != 0)
+		{
+			destination_path += L'\\';
+		}
+
+		destination_path_ = std::move(destination_path);
+	}
+
 	files_copier::files_copier(copier_settings copier_settings, finder_settings finder_settings, std::filesystem::path finder_path) :
 		settings_{ std::move(copier_settings) },
 		files_finder_{ std::move(finder_settings), std::move(finder_path) }
@@ -25,9 +42,9 @@ namespace fc
 		}
 
 		std::error_code error_code{};
-		if (!exists(settings().destination, error_code) || !is_directory(settings().destination, error_code))
+		if (!exists(settings().destination_path(), error_code) || !is_directory(settings().destination_path(), error_code))
 		{
-			create_directories(settings().destination, error_code);
+			create_directories(settings().destination_path(), error_code);
 
 			if (error_code)
 			{
@@ -42,7 +59,7 @@ namespace fc
 				begin_callback(*this, i);
 			}
 
-			if(settings().copy_option == e_copy_options::keep_both)
+			if(settings().copy_option() == e_copy_options::keep_both)
 			{
 				auto new_filepath = get_new_filepath(finder().found_files()[i].filename());
 				if (!exists(new_filepath, error_code))
@@ -54,8 +71,8 @@ namespace fc
 			}
 			else
 			{
-				const auto copy_option = static_cast<std::filesystem::copy_options>(settings().copy_option);
-				std::filesystem::copy(finder().found_files()[i], settings().destination, copy_option, error_code);
+				const auto copy_option = static_cast<std::filesystem::copy_options>(settings().copy_option());
+				std::filesystem::copy(finder().found_files()[i], settings().destination_path(), copy_option, error_code);
 			}
 
 			if (end_callback)
@@ -69,14 +86,7 @@ namespace fc
 
 	std::filesystem::path files_copier::get_new_filepath(const std::wstring& filename) const
 	{
-		// todo, for now, make sure its valid in the settings
-		auto filepath = settings().destination.wstring();
-		if (wcsncmp(&filepath[filepath.size() - 1], L"\\", 1) != 0)
-		{
-			filepath += L'\\';
-		}
-
-		return filepath + filename;
+		return settings().destination_path().wstring() + filename;
 	}
 
 	std::filesystem::path files_copier::get_next_free_filepath(const std::filesystem::path& current_filepath)

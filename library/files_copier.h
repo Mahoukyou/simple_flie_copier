@@ -19,8 +19,21 @@ namespace fc
 
 	struct copier_settings
 	{
-		std::filesystem::path destination;
-		e_copy_options copy_option{ e_copy_options::skip_existing };
+		explicit copier_settings(std::wstring destination_path, e_copy_options copy_option = e_copy_options::skip_existing);
+
+		const auto& destination_path() const noexcept
+		{
+			return destination_path_;
+		}
+
+		e_copy_options copy_option() const noexcept
+		{
+			return copy_option_;
+		}
+
+	private:
+		std::filesystem::path destination_path_;
+		e_copy_options copy_option_;
 	};
 
 	class files_copier
