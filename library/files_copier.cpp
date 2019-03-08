@@ -62,7 +62,7 @@ namespace fc
 			if(settings().copy_option() == e_copy_options::keep_both)
 			{
 				auto new_filepath = get_new_filepath(finder().found_files()[i].filename());
-				if (!exists(new_filepath, error_code))
+				if (exists(new_filepath, error_code))
 				{
 					new_filepath = get_next_free_filepath(new_filepath);
 				}
